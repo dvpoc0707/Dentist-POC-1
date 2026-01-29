@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, Calendar } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const navLinks = [
   { name: "Home", href: "#" },
@@ -50,9 +51,11 @@ const Header = () => {
               <Phone className="w-4 h-4" />
               <span>+1 (234) 567-890</span>
             </a>
-            <Button variant="hero" size="lg" className="gap-2">
-              <Calendar className="w-4 h-4" />
-              Book Now
+            <Button variant="hero" size="lg" className="gap-2" asChild>
+              <Link to="/book">
+                <Calendar className="w-4 h-4" />
+                Book Now
+              </Link>
             </Button>
           </div>
 
@@ -92,9 +95,11 @@ const Header = () => {
                   <Phone className="w-4 h-4" />
                   <span>+1 (234) 567-890</span>
                 </a>
-                <Button variant="hero" size="lg" className="w-full gap-2">
-                  <Calendar className="w-4 h-4" />
-                  Book Appointment
+                <Button variant="hero" size="lg" className="w-full gap-2" asChild>
+                  <Link to="/book">
+                    <Calendar className="w-4 h-4" />
+                    Book Appointment
+                  </Link>
                 </Button>
               </div>
             </nav>

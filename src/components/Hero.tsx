@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Calendar, Play, Star, Award, Users, Shield } from "lucide-react";
+import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-smile.jpg";
 
 const stats = [
@@ -50,9 +51,11 @@ const Hero = () => {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12">
-              <Button variant="hero" size="xl" className="gap-2">
-                <Calendar className="w-5 h-5" />
-                Book Free Consultation
+              <Button variant="hero" size="xl" className="gap-2" asChild>
+                <Link to="/book">
+                  <Calendar className="w-5 h-5" />
+                  Book Free Consultation
+                </Link>
               </Button>
               <Button variant="heroOutline" size="xl" className="gap-2">
                 <Play className="w-5 h-5" />
