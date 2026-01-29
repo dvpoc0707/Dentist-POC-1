@@ -26,7 +26,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center lg:text-left order-2 lg:order-1"
+            className="text-center lg:text-left"
           >
             {/* Badge */}
             <motion.div
@@ -90,7 +90,7 @@ const Hero = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative order-1 lg:order-2 px-4 sm:px-8 lg:px-0"
+            className="relative px-4 sm:px-8 lg:px-0"
           >
             <div className="relative">
               {/* Main Image */}
