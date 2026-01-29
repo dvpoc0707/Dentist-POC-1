@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Calendar, Phone, MessageCircle, ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, Phone, Mail, MapPin, Clock } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const benefits = [
   "Free Initial Consultation",
@@ -18,17 +18,27 @@ const benefits = [
   "Same-Day Appointments Available",
 ];
 
+const contactInfo = [
+  { icon: Phone, label: "Phone", value: "+1 (234) 567-890" },
+  { icon: Mail, label: "Email", value: "hello@smilestudio.com" },
+  { icon: MapPin, label: "Address", value: "123 Dental Ave, New York, NY 10001" },
+  { icon: Clock, label: "Hours", value: "Mon-Sat: 9AM - 7PM" },
+];
+
 const formSchema = z.object({
   fullName: z.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name must be less than 100 characters"),
   email: z.string().trim().email("Please enter a valid email address").max(255, "Email must be less than 255 characters"),
   phone: z.string().trim().min(7, "Please enter a valid phone number").max(20, "Phone number too long"),
   service: z.string().min(1, "Please select a service"),
+  preferredDate: z.string().optional(),
   message: z.string().trim().max(1000, "Message must be less than 1000 characters").optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-const BookingCTA = () => {
+const BookingPage = () => {
+  const navigate = useNavigate();
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -36,6 +46,7 @@ const BookingCTA = () => {
       email: "",
       phone: "",
       service: "",
+      preferredDate: "",
       message: "",
     },
   });
@@ -49,94 +60,103 @@ const BookingCTA = () => {
     });
     
     form.reset();
+    
+    // Navigate back to home after a short delay
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
   };
 
   return (
-    <section id="booking" className="section-padding bg-gradient-primary relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
-      </div>
-
-      <div className="container-narrow relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Content */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+    <div className="min-h-screen bg-gradient-hero pt-8 pb-16">
+      <div className="container-narrow">
+        {/* Back Button */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="mb-8"
+        >
+          <Link 
+            to="/" 
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           >
-            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-medium text-primary-foreground mb-6">
-              Ready to Transform Your Smile?
-            </h2>
-            <p className="text-lg text-primary-foreground/80 mb-8">
-              Take the first step towards the smile you've always dreamed of. Book your free consultation today and discover what's possible.
+            <ArrowLeft className="w-4 h-4" />
+            Back to Home
+          </Link>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
+          {/* Left Column - Info */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="font-display text-4xl md:text-5xl font-medium text-foreground mb-4">
+              Book Your Free Consultation
+            </h1>
+            <p className="text-lg text-muted-foreground mb-8">
+              Take the first step towards the smile you've always dreamed of. Fill out the form and our team will contact you within 24 hours.
             </p>
 
             {/* Benefits */}
-            <div className="grid sm:grid-cols-2 gap-4 mb-8">
+            <div className="space-y-4 mb-10">
               {benefits.map((benefit, index) => (
                 <motion.div
                   key={benefit}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 + index * 0.1 }}
                   className="flex items-center gap-3"
                 >
-                  <CheckCircle className="w-5 h-5 text-primary-foreground flex-shrink-0" />
-                  <span className="text-primary-foreground">{benefit}</span>
+                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                    <CheckCircle className="w-4 h-4 text-primary" />
+                  </div>
+                  <span className="text-foreground">{benefit}</span>
                 </motion.div>
               ))}
             </div>
 
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                size="xl" 
-                className="bg-white text-primary hover:bg-white/90 gap-2 font-semibold"
-                asChild
-              >
-                <Link to="/book">
-                  <Calendar className="w-5 h-5" />
-                  Book Free Consultation
-                </Link>
-              </Button>
-              <Button 
-                size="xl" 
-                variant="outline"
-                className="border-2 border-white text-white hover:bg-white hover:text-primary gap-2 font-semibold bg-transparent"
-              >
-                <Phone className="w-5 h-5" />
-                Call Us Now
-              </Button>
+            {/* Contact Info */}
+            <div className="bg-card rounded-2xl p-6 border border-border">
+              <h3 className="font-display text-lg font-medium text-foreground mb-4">
+                Contact Information
+              </h3>
+              <div className="space-y-4">
+                {contactInfo.map((item) => (
+                  <div key={item.label} className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <item.icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">{item.label}</p>
+                      <p className="font-medium text-foreground">{item.value}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </motion.div>
 
-          {/* Contact Card */}
+          {/* Right Column - Form */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="bg-white rounded-3xl p-8 shadow-medium"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="bg-card rounded-3xl p-8 shadow-medium border border-border"
           >
-            <h3 className="font-display text-2xl font-medium text-foreground mb-6">
-              Book Free Consultation
-            </h3>
-
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                 <FormField
                   control={form.control}
                   name="fullName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel>Full Name *</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="John Smith" 
-                          className="px-4 py-3 rounded-xl border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
+                          className="h-12 px-4 rounded-xl border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
                           {...field} 
                         />
                       </FormControl>
@@ -151,12 +171,12 @@ const BookingCTA = () => {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>Email *</FormLabel>
                         <FormControl>
                           <Input 
                             type="email"
                             placeholder="john@email.com" 
-                            className="px-4 py-3 rounded-xl border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
+                            className="h-12 px-4 rounded-xl border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
                             {...field} 
                           />
                         </FormControl>
@@ -169,12 +189,12 @@ const BookingCTA = () => {
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone</FormLabel>
+                        <FormLabel>Phone *</FormLabel>
                         <FormControl>
                           <Input 
                             type="tel"
                             placeholder="+1 (234) 567-890" 
-                            className="px-4 py-3 rounded-xl border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
+                            className="h-12 px-4 rounded-xl border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
                             {...field} 
                           />
                         </FormControl>
@@ -189,10 +209,10 @@ const BookingCTA = () => {
                   name="service"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Service Interested In</FormLabel>
+                      <FormLabel>Service Interested In *</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="px-4 py-3 rounded-xl border-border focus:border-primary focus:ring-2 focus:ring-primary/20">
+                          <SelectTrigger className="h-12 px-4 rounded-xl border-border focus:border-primary focus:ring-2 focus:ring-primary/20">
                             <SelectValue placeholder="Select a service" />
                           </SelectTrigger>
                         </FormControl>
@@ -212,14 +232,32 @@ const BookingCTA = () => {
 
                 <FormField
                   control={form.control}
+                  name="preferredDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Preferred Date (Optional)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="date"
+                          className="h-12 px-4 rounded-xl border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="message"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Message (Optional)</FormLabel>
                       <FormControl>
                         <Textarea 
-                          rows={3}
-                          placeholder="Tell us about your dental goals..."
+                          rows={4}
+                          placeholder="Tell us about your dental goals or any concerns..."
                           className="px-4 py-3 rounded-xl border-border focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
                           {...field} 
                         />
@@ -233,24 +271,23 @@ const BookingCTA = () => {
                   type="submit" 
                   variant="hero" 
                   size="xl" 
-                  className="w-full gap-2"
+                  className="w-full"
                   disabled={form.formState.isSubmitting}
                 >
-                  {form.formState.isSubmitting ? "Submitting..." : "Submit Request"}
-                  <ArrowRight className="w-5 h-5" />
+                  {form.formState.isSubmitting ? "Submitting..." : "Request Consultation"}
                 </Button>
+
+                <p className="text-center text-sm text-muted-foreground">
+                  By submitting, you agree to our{" "}
+                  <a href="#" className="text-primary hover:underline">Privacy Policy</a>
+                </p>
               </form>
             </Form>
-
-            <div className="flex items-center justify-center gap-2 mt-6 text-sm text-muted-foreground">
-              <MessageCircle className="w-4 h-4" />
-              <span>Or chat with us on WhatsApp</span>
-            </div>
           </motion.div>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 
-export default BookingCTA;
+export default BookingPage;
