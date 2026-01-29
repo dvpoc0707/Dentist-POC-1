@@ -1,6 +1,14 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Calendar, Phone, MessageCircle, ArrowRight, CheckCircle } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "@/hooks/use-toast";
 
 const benefits = [
   "Free Initial Consultation",
@@ -9,9 +17,41 @@ const benefits = [
   "Same-Day Appointments Available",
 ];
 
+const formSchema = z.object({
+  fullName: z.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name must be less than 100 characters"),
+  email: z.string().trim().email("Please enter a valid email address").max(255, "Email must be less than 255 characters"),
+  phone: z.string().trim().min(7, "Please enter a valid phone number").max(20, "Phone number too long"),
+  service: z.string().min(1, "Please select a service"),
+  message: z.string().trim().max(1000, "Message must be less than 1000 characters").optional(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
 const BookingCTA = () => {
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      phone: "",
+      service: "",
+      message: "",
+    },
+  });
+
+  const onSubmit = (data: FormValues) => {
+    console.log("Form submitted:", { ...data, email: "[REDACTED]", phone: "[REDACTED]" });
+    
+    toast({
+      title: "Consultation Request Submitted!",
+      description: "Thank you! We'll contact you within 24 hours to confirm your appointment.",
+    });
+    
+    form.reset();
+  };
+
   return (
-    <section className="section-padding bg-gradient-primary relative overflow-hidden">
+    <section id="booking" className="section-padding bg-gradient-primary relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
@@ -78,75 +118,125 @@ const BookingCTA = () => {
             className="bg-white rounded-3xl p-8 shadow-medium"
           >
             <h3 className="font-display text-2xl font-medium text-foreground mb-6">
-              Quick Contact
+              Book Free Consultation
             </h3>
 
-            <form className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="John Smith"
-                  className="w-full px-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="fullName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="John Smith" 
+                          className="px-4 py-3 rounded-xl border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    placeholder="john@email.com"
-                    className="w-full px-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="email"
+                            placeholder="john@email.com" 
+                            className="px-4 py-3 rounded-xl border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="tel"
+                            placeholder="+1 (234) 567-890" 
+                            className="px-4 py-3 rounded-xl border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Phone
-                  </label>
-                  <input
-                    type="tel"
-                    placeholder="+1 (234) 567-890"
-                    className="w-full px-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                  />
-                </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Service Interested In
-                </label>
-                <select className="w-full px-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-white">
-                  <option>Select a service</option>
-                  <option>Teeth Whitening</option>
-                  <option>Dental Veneers</option>
-                  <option>Invisalign</option>
-                  <option>Dental Implants</option>
-                  <option>General Check-up</option>
-                  <option>Other</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Message (Optional)
-                </label>
-                <textarea
-                  rows={3}
-                  placeholder="Tell us about your dental goals..."
-                  className="w-full px-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
+                <FormField
+                  control={form.control}
+                  name="service"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Service Interested In</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="px-4 py-3 rounded-xl border-border focus:border-primary focus:ring-2 focus:ring-primary/20">
+                            <SelectValue placeholder="Select a service" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="teeth-whitening">Teeth Whitening</SelectItem>
+                          <SelectItem value="veneers">Dental Veneers</SelectItem>
+                          <SelectItem value="invisalign">Invisalign</SelectItem>
+                          <SelectItem value="implants">Dental Implants</SelectItem>
+                          <SelectItem value="checkup">General Check-up</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <Button variant="hero" size="xl" className="w-full gap-2">
-                Submit Request
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-            </form>
+                <FormField
+                  control={form.control}
+                  name="message"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Message (Optional)</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          rows={3}
+                          placeholder="Tell us about your dental goals..."
+                          className="px-4 py-3 rounded-xl border-border focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button 
+                  type="submit" 
+                  variant="hero" 
+                  size="xl" 
+                  className="w-full gap-2"
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting ? "Submitting..." : "Submit Request"}
+                  <ArrowRight className="w-5 h-5" />
+                </Button>
+              </form>
+            </Form>
 
             <div className="flex items-center justify-center gap-2 mt-6 text-sm text-muted-foreground">
               <MessageCircle className="w-4 h-4" />
