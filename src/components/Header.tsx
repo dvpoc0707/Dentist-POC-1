@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useClinicConfig } from "@/hooks/useClinicConfig";
 
 const navLinks = [
   { name: "Home", href: "#" },
@@ -15,6 +16,7 @@ const navLinks = [
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const config = useClinicConfig();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
@@ -23,11 +25,11 @@ const Header = () => {
           {/* Logo */}
           <a href="#" className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center">
-              <span className="text-primary-foreground font-display font-bold text-xl">S</span>
+              <span className="text-primary-foreground font-display font-bold text-xl">{config.clinic.logo.initial}</span>
             </div>
             <div className="flex flex-col">
-              <span className="font-display text-xl font-semibold text-foreground">Smile Studio</span>
-              <span className="text-xs text-muted-foreground -mt-1">Premium Dental Care</span>
+              <span className="font-display text-xl font-semibold text-foreground">{config.clinic.name}</span>
+              <span className="text-xs text-muted-foreground -mt-1">{config.clinic.tagline}</span>
             </div>
           </a>
 
@@ -47,9 +49,9 @@ const Header = () => {
 
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-4">
-            <a href="tel:+1234567890" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <a href={`tel:${config.contact.phone.replace(/\s/g, '')}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
               <Phone className="w-4 h-4" />
-              <span>+1 (234) 567-890</span>
+              <span>{config.contact.phone}</span>
             </a>
             <Button variant="hero" size="lg" className="gap-2" asChild>
               <Link to="/book">
@@ -91,9 +93,9 @@ const Header = () => {
                 </a>
               ))}
               <div className="pt-4 border-t border-border flex flex-col gap-3">
-                <a href="tel:+1234567890" className="flex items-center gap-2 text-muted-foreground">
+                <a href={`tel:${config.contact.phone.replace(/\s/g, '')}`} className="flex items-center gap-2 text-muted-foreground">
                   <Phone className="w-4 h-4" />
-                  <span>+1 (234) 567-890</span>
+                  <span>{config.contact.phone}</span>
                 </a>
                 <Button variant="hero" size="lg" className="w-full gap-2" asChild>
                   <Link to="/book">
