@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useClinicConfig } from "@/hooks/useClinicConfig";
+import Logo from "./Logo";
 
 const navLinks = [
   { name: "Home", href: "#" },
@@ -23,15 +24,7 @@ const Header = () => {
       <div className="container-narrow">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center">
-              <span className="text-primary-foreground font-display font-bold text-xl">{config.clinic.logo.initial}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-display text-xl font-semibold text-foreground">{config.clinic.name}</span>
-              <span className="text-xs text-muted-foreground -mt-1">{config.clinic.tagline}</span>
-            </div>
-          </a>
+          <Logo />
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-8">
