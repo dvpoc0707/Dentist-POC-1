@@ -55,7 +55,7 @@ const Footer = () => {
                 <span className="text-primary-foreground font-display font-bold text-xl">S</span>
               </div>
               <div className="flex flex-col">
-                <span className="font-display text-xl font-semibold text-background">Smile Studio</span>
+                <span className="font-display text-xl font-semibold text-background">UrbanSmile Dental</span>
                 <span className="text-xs text-background/60 -mt-1">Premium Dental Care</span>
               </div>
             </a>
@@ -194,7 +194,7 @@ const Footer = () => {
       <div className="border-t border-background/10">
         <div className="container-narrow py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-background/60">
-            <p>© 2024 Smile Studio. All rights reserved.</p>
+            <p>© 2024 UrbanSmile Dental. All rights reserved.</p>
             <div className="flex gap-6">
               <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>

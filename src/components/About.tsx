@@ -83,7 +83,7 @@ const About = () => {
               <span className="text-gradient-primary">Compassion</span>
             </h2>
             <p className="text-lg text-muted-foreground mb-8">
-              At Smile Studio, we believe everyone deserves a healthy, beautiful smile. Our team of internationally trained specialists combines cutting-edge technology with personalized care to deliver exceptional results.
+              At UrbanSmile Dental, we believe everyone deserves a healthy, beautiful smile. Our team of internationally trained specialists combines cutting-edge technology with personalized care to deliver exceptional results.
             </p>
 
             {/* Features Grid */}

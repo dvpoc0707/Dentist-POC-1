@@ -3,10 +3,10 @@ import { ClinicConfig } from "./types";
 // Default configuration - this will be overridden by client-specific configs
 export const defaultConfig: ClinicConfig = {
   clinic: {
-    name: "Smile Studio",
+    name: "UrbanSmile Dental",
     tagline: "Premium Dental Care",
     logo: {
-      initial: "S",
+      initial: "U",
     },
   },
   contact: {
@@ -101,7 +101,7 @@ export const defaultConfig: ClinicConfig = {
     },
     about: {
       title: "Where Expertise Meets Compassion",
-      description: "At Smile Studio, we believe everyone deserves a healthy, beautiful smile. Our team of internationally trained specialists combines cutting-edge technology with personalized care to deliver exceptional results.",
+      description: "At UrbanSmile Dental, we believe everyone deserves a healthy, beautiful smile. Our team of internationally trained specialists combines cutting-edge technology with personalized care to deliver exceptional results.",
       features: [
         "State-of-the-art equipment & technology",
         "Internationally trained specialists",
