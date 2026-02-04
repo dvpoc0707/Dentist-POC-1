@@ -2,34 +2,14 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
-
-const transformations = [
-  {
-    id: 1,
-    treatment: "Teeth Whitening",
-    description: "Professional whitening treatment - 8 shades brighter in just one session",
-    beforeColor: "bg-amber-200",
-    afterColor: "bg-white",
-  },
-  {
-    id: 2,
-    treatment: "Porcelain Veneers",
-    description: "Complete smile makeover with custom-designed porcelain veneers",
-    beforeColor: "bg-amber-100",
-    afterColor: "bg-white",
-  },
-  {
-    id: 3,
-    treatment: "Invisalign",
-    description: "12-month clear aligner treatment for perfect alignment",
-    beforeColor: "bg-amber-50",
-    afterColor: "bg-white",
-  },
-];
+import { useClinicConfig } from "@/hooks/useClinicConfig";
 
 const BeforeAfter = () => {
+  const config = useClinicConfig();
+  const transformations = config.beforeAfter || [];
+  
   const [activeIndex, setActiveIndex] = useState(0);
-  const [sliderPosition, setSliderPosition] = useState(50);
+  const [sliderPositions, setSliderPositions] = useState<{ [key: number]: number }>({});
 
   const nextSlide = () => {
     setActiveIndex((prev) => (prev + 1) % transformations.length);
@@ -38,6 +18,24 @@ const BeforeAfter = () => {
   const prevSlide = () => {
     setActiveIndex((prev) => (prev - 1 + transformations.length) % transformations.length);
   };
+
+  const handleSliderMove = (e: React.MouseEvent<HTMLDivElement>, caseId: number) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    setSliderPositions((prev) => ({ ...prev, [caseId]: percentage }));
+  };
+
+  const handleSliderTouch = (e: React.TouchEvent<HTMLDivElement>, caseId: number) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.touches[0].clientX - rect.left;
+    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    setSliderPositions((prev) => ({ ...prev, [caseId]: percentage }));
+  };
+
+  if (transformations.length === 0) {
+    return null;
+  }
 
   return (
     <section id="gallery" className="section-padding bg-foreground">
@@ -70,41 +68,36 @@ const BeforeAfter = () => {
             className="relative"
           >
             {/* Comparison Container */}
-            <div className="relative aspect-[16/10] rounded-3xl overflow-hidden bg-muted shadow-medium">
-              {/* Before Side */}
-              <div 
-                className="absolute inset-0 flex items-center justify-center"
-                style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
+            <div 
+              className="relative aspect-[16/10] rounded-3xl overflow-hidden bg-muted shadow-medium cursor-ew-resize select-none"
+              onMouseMove={(e) => handleSliderMove(e, transformations[activeIndex].id)}
+              onTouchMove={(e) => handleSliderTouch(e, transformations[activeIndex].id)}
+            >
+              {/* After Image (Background) */}
+              <img
+                src={transformations[activeIndex].afterImage}
+                alt={`After ${transformations[activeIndex].treatment}`}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+
+              {/* Before Image (Overlay with clip) */}
+              <div
+                className="absolute inset-0 overflow-hidden"
+                style={{
+                  clipPath: `inset(0 ${100 - (sliderPositions[transformations[activeIndex].id] ?? 50)}% 0 0)`,
+                }}
               >
-                <div className={`w-full h-full ${transformations[activeIndex].beforeColor} flex items-center justify-center`}>
-                  <div className="text-center">
-                    <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-amber-300/50 flex items-center justify-center">
-                      <span className="text-4xl">😔</span>
-                    </div>
-                    <p className="text-xl font-medium text-foreground/70">Before</p>
-                  </div>
-                </div>
+                <img
+                  src={transformations[activeIndex].beforeImage}
+                  alt={`Before ${transformations[activeIndex].treatment}`}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
               </div>
 
-              {/* After Side */}
-              <div 
-                className="absolute inset-0 flex items-center justify-center"
-                style={{ clipPath: `inset(0 0 0 ${sliderPosition}%)` }}
-              >
-                <div className={`w-full h-full ${transformations[activeIndex].afterColor} flex items-center justify-center`}>
-                  <div className="text-center">
-                    <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Sparkles className="w-12 h-12 text-primary" />
-                    </div>
-                    <p className="text-xl font-medium text-foreground">After</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Slider */}
-              <div 
-                className="absolute top-0 bottom-0 w-1 bg-background cursor-ew-resize z-10"
-                style={{ left: `${sliderPosition}%`, transform: 'translateX(-50%)' }}
+              {/* Slider Line */}
+              <div
+                className="absolute top-0 bottom-0 w-1 bg-background shadow-lg z-10"
+                style={{ left: `${sliderPositions[transformations[activeIndex].id] ?? 50}%` }}
               >
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-background rounded-full shadow-medium flex items-center justify-center">
                   <div className="flex gap-1">
@@ -114,21 +107,11 @@ const BeforeAfter = () => {
                 </div>
               </div>
 
-              {/* Slider Control */}
-              <input
-                type="range"
-                min="10"
-                max="90"
-                value={sliderPosition}
-                onChange={(e) => setSliderPosition(Number(e.target.value))}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-20"
-              />
-
               {/* Labels */}
-              <div className="absolute bottom-6 left-6 bg-foreground/80 text-background px-4 py-2 rounded-full text-sm font-medium">
+              <div className="absolute top-6 left-6 bg-foreground/80 text-background px-4 py-2 rounded-full text-sm font-medium">
                 Before
               </div>
-              <div className="absolute bottom-6 right-6 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium">
+              <div className="absolute top-6 right-6 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium">
                 After
               </div>
             </div>
@@ -143,8 +126,16 @@ const BeforeAfter = () => {
               </button>
 
               <div className="text-center">
+                <div className="inline-flex items-center gap-2 mb-2">
+                  <span className="px-3 py-1 bg-background/20 text-background text-sm font-medium rounded-full">
+                    {transformations[activeIndex].treatment}
+                  </span>
+                  <span className="text-sm text-background/70">
+                    {transformations[activeIndex].duration}
+                  </span>
+                </div>
                 <h3 className="font-display text-xl font-medium text-background mb-1">
-                  {transformations[activeIndex].treatment}
+                  {transformations[activeIndex].treatment} Transformation
                 </h3>
                 <p className="text-background/70 text-sm">
                   {transformations[activeIndex].description}
@@ -159,16 +150,24 @@ const BeforeAfter = () => {
               </button>
             </div>
 
-            {/* Dots */}
-            <div className="flex justify-center gap-2 mt-6">
-              {transformations.map((_, index) => (
+            {/* Thumbnail Navigation */}
+            <div className="flex justify-center gap-4 mt-6">
+              {transformations.map((item, index) => (
                 <button
-                  key={index}
+                  key={item.id}
                   onClick={() => setActiveIndex(index)}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    index === activeIndex ? "w-8 bg-primary" : "bg-background/30"
+                  className={`relative w-20 h-14 rounded-lg overflow-hidden transition-all ${
+                    index === activeIndex
+                      ? "ring-2 ring-primary ring-offset-2"
+                      : "opacity-60 hover:opacity-100"
                   }`}
-                />
+                >
+                  <img
+                    src={item.afterImage}
+                    alt={item.treatment}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
               ))}
             </div>
           </motion.div>

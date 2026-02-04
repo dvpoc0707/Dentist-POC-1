@@ -52,4 +52,4 @@ export function loadConfig(): ClinicConfig {
 export const clinicConfig = loadConfig();
 
 // Export types for use in components
-export type { ClinicConfig, Service, Doctor, Testimonial } from "./types";
+export type { ClinicConfig, Service, Doctor, Testimonial, BeforeAfterCase } from "./types";

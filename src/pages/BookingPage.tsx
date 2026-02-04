@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle, Phone, Mail, MapPin, Clock } from "lucide-react";
+import { ArrowLeft, CheckCircle, Phone, Mail, MapPin, Clock, Calendar as CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,6 +10,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -30,7 +35,7 @@ const formSchema = z.object({
   email: z.string().trim().email("Please enter a valid email address").max(255, "Email must be less than 255 characters"),
   phone: z.string().trim().min(7, "Please enter a valid phone number").max(20, "Phone number too long"),
   service: z.string().min(1, "Please select a service"),
-  preferredDate: z.string().optional(),
+  preferredDate: z.date().optional(),
   message: z.string().trim().max(1000, "Message must be less than 1000 characters").optional(),
 });
 
@@ -46,7 +51,7 @@ const BookingPage = () => {
       email: "",
       phone: "",
       service: "",
-      preferredDate: "",
+      preferredDate: undefined,
       message: "",
     },
   });
@@ -234,15 +239,37 @@ const BookingPage = () => {
                   control={form.control}
                   name="preferredDate"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex flex-col">
                       <FormLabel>Preferred Date (Optional)</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="date"
-                          className="h-12 px-4 rounded-xl border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
-                          {...field} 
-                        />
-                      </FormControl>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "h-12 w-full justify-start text-left font-normal rounded-xl border-border",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) => date < new Date() || date < new Date("1900-01-01")}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>
                   )}
